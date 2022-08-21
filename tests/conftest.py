@@ -112,3 +112,27 @@ def mocked_api_video_with_author() -> Video:  # type: ignore[no-any-unimported]
         }
 
         yield video
+
+
+@fixture
+def mocked_api_video_with_music() -> Video:  # type: ignore[no-any-unimported]
+    with patch("TikTokApi.api.video.Video"):
+        video = Video(id="7057847459820604677")
+        video.info_full = Mock()
+        video.info_full.return_value = {
+            "itemInfo": {
+                "itemStruct": {
+                    "music": {
+                        "album": "Faking Love (feat. Saweetie)",
+                        "authorName": "Anitta",
+                        "duration": 60,
+                        "id": "7020499784389625857",
+                        "playUrl": "https://sf16-ies-music-va.tiktokcdn.com/obj/"
+                        "tos-useast2a-ve-2774/6f456cc79d844251aa7884bd45938e0a",
+                        "title": "Faking Love (feat. Saweetie)",
+                    },
+                }
+            }
+        }
+
+        yield video

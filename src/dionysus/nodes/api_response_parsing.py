@@ -8,12 +8,14 @@ from typing import Any, Dict
 from .nx_g_schema import NodeAttr, NodeAttrKey, NodeAttrs, NodeType
 
 
-def api_video_to_node_attrs(video_info: Dict[str, Any]) -> NodeAttrs:
+def video_info_to_video_node_attrs(video_info: Dict[str, Any]) -> NodeAttrs:
     # Identify video statistics
     video_stats = video_info["stats"]
 
     # Parse each node attribute
-    ntype = NodeAttr(node_attr_key=NodeAttrKey.ntype, node_attr_val=NodeType.video)
+    ntype = NodeAttr(
+        node_attr_key=NodeAttrKey.ntype, node_attr_val=NodeType.video.value
+    )
     id = NodeAttr(node_attr_key=NodeAttrKey.id, node_attr_val=video_info["id"])
     text = NodeAttr(node_attr_key=NodeAttrKey.text, node_attr_val=video_info["desc"])
     creation_time = NodeAttr(
@@ -72,9 +74,11 @@ def api_video_to_node_attrs(video_info: Dict[str, Any]) -> NodeAttrs:
     return video_attrs
 
 
-def api_hashtag_to_node_attrs(hashtag_info: Dict[str, Any]) -> NodeAttrs:
-    # Parse each node attributes
-    ntype = NodeAttr(node_attr_key=NodeAttrKey.ntype, node_attr_val=NodeType.hashtag)
+def hashtag_info_to_hashtag_node_attrs(hashtag_info: Dict[str, Any]) -> NodeAttrs:
+    # Parse each node attribute
+    ntype = NodeAttr(
+        node_attr_key=NodeAttrKey.ntype, node_attr_val=NodeType.hashtag.value
+    )
     id = NodeAttr(node_attr_key=NodeAttrKey.id, node_attr_val=hashtag_info["id"])
     text = NodeAttr(node_attr_key=NodeAttrKey.text, node_attr_val=hashtag_info["title"])
     view_count = NodeAttr(
@@ -92,13 +96,13 @@ def api_hashtag_to_node_attrs(hashtag_info: Dict[str, Any]) -> NodeAttrs:
     return hashtag_attrs
 
 
-def api_author_to_node_attrs(video_info: Dict[str, Any]) -> NodeAttrs:
-    # Identify the section of video info for its author
-    author_info = video_info["author"]
-    author_stats = video_info["authorStats"]
-
-    # Parse each node attributes
-    ntype = NodeAttr(node_attr_key=NodeAttrKey.ntype, node_attr_val=NodeType.author)
+def author_info_stats_to_author_node_attrs(
+    author_info: Dict[str, Any], author_stats: Dict[str, Any]
+) -> NodeAttrs:
+    # Parse each node attribute
+    ntype = NodeAttr(
+        node_attr_key=NodeAttrKey.ntype, node_attr_val=NodeType.author.value
+    )
     id = NodeAttr(node_attr_key=NodeAttrKey.id, node_attr_val=author_info["id"])
     text = NodeAttr(
         node_attr_key=NodeAttrKey.text, node_attr_val=author_info["uniqueId"]
@@ -120,11 +124,18 @@ def api_author_to_node_attrs(video_info: Dict[str, Any]) -> NodeAttrs:
         node_attr_key=NodeAttrKey.follower_count,
         node_attr_val=author_stats["followerCount"],
     )
+    following_count = NodeAttr(
+        node_attr_key=NodeAttrKey.following_count,
+        node_attr_val=author_stats["followingCount"],
+    )
     heart = NodeAttr(
         node_attr_key=NodeAttrKey.heart, node_attr_val=author_stats["heart"]
     )
     digg_count = NodeAttr(
         node_attr_key=NodeAttrKey.digg_count, node_attr_val=author_stats["diggCount"]
+    )
+    video_count = NodeAttr(
+        node_attr_key=NodeAttrKey.video_count, node_attr_val=author_stats["videoCount"]
     )
 
     # Collect parsed attributes
@@ -138,9 +149,37 @@ def api_author_to_node_attrs(video_info: Dict[str, Any]) -> NodeAttrs:
             signature,
             verified,
             follower_count,
+            following_count,
             heart,
             digg_count,
+            video_count,
         ]
     )
 
     return author_node_attrs
+
+
+def music_info_to_music_node_attrs(music_info: Dict[str, Any]) -> NodeAttrs:
+    # Parse each node attribute
+    ntype = NodeAttr(
+        node_attr_key=NodeAttrKey.ntype, node_attr_val=NodeType.music.value
+    )
+    id = NodeAttr(node_attr_key=NodeAttrKey.id, node_attr_val=music_info["id"])
+    text = NodeAttr(node_attr_key=NodeAttrKey.text, node_attr_val=music_info["title"])
+    author_name = NodeAttr(
+        node_attr_key=NodeAttrKey.author_name, node_attr_val=music_info["authorName"]
+    )
+    album = NodeAttr(node_attr_key=NodeAttrKey.album, node_attr_val=music_info["album"])
+    duration = NodeAttr(
+        node_attr_key=NodeAttrKey.duration, node_attr_val=music_info["duration"]
+    )
+    play_url = NodeAttr(
+        node_attr_key=NodeAttrKey.play_url, node_attr_val=music_info["playUrl"]
+    )
+
+    # Collect parsed node attributes
+    music_node_attrs = NodeAttrs(
+        list_node_attr=[ntype, id, text, author_name, album, duration, play_url]
+    )
+
+    return music_node_attrs

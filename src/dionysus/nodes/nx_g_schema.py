@@ -11,7 +11,7 @@ class NodeType(Enum):
     video: str = "VIDEO"
     hashtag: str = "HASHTAG"
     author: str = "AUTHOR"
-    sound: str = "SOUND"
+    music: str = "MUSIC"
 
 
 class NodeAttrKey(Enum):
@@ -21,7 +21,6 @@ class NodeAttrKey(Enum):
     text: str = "text"
 
     # Attributes specific to video
-    duration: str = "duration"
     width: str = "width"
     height: str = "height"
     definition: str = "definition"
@@ -43,6 +42,9 @@ class NodeAttrKey(Enum):
     heart: str = "heart"
 
     # Attributes specific to sound
+    album: str = "album"
+    author_name: str = "author_name"
+
     play_url: str = "play_url"
 
     # Attributes specific to video and author
@@ -51,6 +53,9 @@ class NodeAttrKey(Enum):
     # Attributes specific to video and hastag
     creation_time: str = "creation_time"
     video_count: str = "video_count"
+
+    # Attributes specific to video and sound
+    duration: str = "duration"
 
 
 @dataclass
