@@ -5,6 +5,7 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 
 from pytest import fixture
+from TikTokApi.api.hashtag import Hashtag
 from TikTokApi.api.video import Video
 
 from src.dionysus.nodes.base_logger import get_base_logger
@@ -31,13 +32,82 @@ class TestFixture:
 
 
 @fixture
-def mocked_api_video_generator() -> Video:  # type: ignore[no-any-unimported]
+def mocked_api_video() -> Video:  # type: ignore[no-any-unimported]
     with patch("TikTokApi.api.video.Video"):
         video = Video(id="7057847459820604677")
         video.info_full = Mock()
         video.info_full.return_value = {
             "itemInfo": {
-                "itemStruct": {"desc": "#zoukbrasileiro", "createTime": 1643283168}
+                "itemStruct": {
+                    "id": "7057847459820604677",
+                    "desc": "#zoukbrasileiro",
+                    "createTime": 1643283168,
+                    "video": {
+                        "definition": "720p",
+                        "duration": 28,
+                        "format": "mp4",
+                        "height": 1024,
+                        "width": 576,
+                    },
+                    "stats": {
+                        "commentCount": 2,
+                        "diggCount": 499,
+                        "playCount": 8646,
+                        "shareCount": 6,
+                    },
+                }
+            }
+        }
+
+        yield video
+
+
+@fixture
+def mocked_api_hashtag() -> Hashtag:  # type: ignore[no-any-unimported]
+    with patch("TikTokApi.api.hashtag.Hashtag"):
+        hashtag = Hashtag(id="74915315")
+        hashtag.info_full = Mock()
+        hashtag.info_full.return_value = {
+            "challengeInfo": {
+                "challenge": {
+                    "id": "74915315",
+                    "stats": {"videoCount": 1405, "viewCount": 2700000},
+                    "title": "zoukbrasileiro",
+                }
+            }
+        }
+
+        yield hashtag
+
+
+@fixture
+def mocked_api_video_with_author() -> Video:  # type: ignore[no-any-unimported]
+    with patch("TikTokApi.api.video.Video"):
+        video = Video(id="7057847459820604677")
+        video.info_full = Mock()
+        video.info_full.return_value = {
+            "itemInfo": {
+                "itemStruct": {
+                    "author": {
+                        "id": "6813185604563567621",
+                        "nickname": "Fabricio B Durães",
+                        "privateAccount": False,
+                        "signature": "Te ensino o passo para a felicidade \n"
+                        "Especialista em Zouk \n"
+                        "Professor \n"
+                        "Produtor",
+                        "uniqueId": "fabricioduraes0",
+                        "verified": False,
+                    },
+                    "authorStats": {
+                        "diggCount": 193,
+                        "followerCount": 61100,
+                        "followingCount": 100,
+                        "heart": 351300,
+                        "heartCount": 351300,
+                        "videoCount": 127,
+                    },
+                }
             }
         }
 

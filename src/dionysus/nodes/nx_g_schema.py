@@ -21,14 +21,17 @@ class NodeAttrKey(Enum):
     text: str = "text"
 
     # Attributes specific to video
-    definition: str = "definition"
     duration: str = "duration"
-    format: str = "format"
-    height: str = "height"
     width: str = "width"
+    height: str = "height"
+    definition: str = "definition"
+    format: str = "format"
     comment_count: str = "comment_count"
     play_count: str = "play_count"
     share_count: str = "share_count"
+
+    # Attributes specific to hashtag
+    view_count: str = "viewCount"
 
     # Attributes specific to author
     nickname: str = "nickname"
@@ -36,8 +39,8 @@ class NodeAttrKey(Enum):
     signature: str = "signature"
     verified: str = "verified"
     follower_count: str = "follower_count"
+    following_count: str = "following_count"
     heart: str = "heart"
-    video_count: str = "video_count"
 
     # Attributes specific to sound
     play_url: str = "play_url"
@@ -47,6 +50,7 @@ class NodeAttrKey(Enum):
 
     # Attributes specific to video and hastag
     creation_time: str = "creation_time"
+    video_count: str = "video_count"
 
 
 @dataclass
