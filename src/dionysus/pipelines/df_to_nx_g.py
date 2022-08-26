@@ -6,6 +6,10 @@ from pandas import DataFrame
 
 from ..datasets.networkx_graph_dataset import NetworkXGraphDataSet
 from ..datasets.pandas_hdf5_dataset import PandasHDF5DataSet
+from ..nodes.graph_manipulation import (
+    contract_nodes_from_list_set_nid,
+    identify_ntype_node_to_contract_by_text,
+)
 from ..nodes.nx_g_schema import (
     EdgeAttr,
     EdgeAttrKey,
@@ -13,6 +17,7 @@ from ..nodes.nx_g_schema import (
     EdgeTuple,
     EdgeTuples,
     EdgeType,
+    NodeAttrKey,
     NodeTuple,
     NodeTuples,
     NodeType,
@@ -156,8 +161,22 @@ def _df_to_nx_g(  # type: ignore[no-any-unimported]
     nx_g.add_edges_from(ebunch_to_add=all_edge_tuples.to_list_edge_tuple_native())
 
     logger.info(
-        f"Constructed graph has {len(nx_g.nodes())} nodes and {len(nx_g.edges())} edges"
+        f"Pre-contraction graph has {len(nx_g.nodes())} nodes "
+        f"and {len(nx_g.edges())} edges"
     )
+
+    # Contract nodes based on common text
+    for ntype in [NodeType.author, NodeType.music]:
+        list_set_nid = identify_ntype_node_to_contract_by_text(
+            nx_g=nx_g,
+            ntype=ntype,
+            nfeat_ntype=NodeAttrKey.ntype.value,
+            nfeat_text=NodeAttrKey.text.value,
+            logger=logger,
+        )
+        nx_g = contract_nodes_from_list_set_nid(
+            nx_g=nx_g, list_set_nid=list_set_nid, logger=logger
+        )
 
     return nx_g
 

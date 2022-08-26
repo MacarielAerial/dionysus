@@ -282,6 +282,17 @@ extra = ["lxml (>=4.6)", "pygraphviz (>=1.9)", "pydot (>=1.4.2)", "sympy (>=1.10
 test = ["pytest (>=7.1)", "pytest-cov (>=3.0)", "codecov (>=2.1)"]
 
 [[package]]
+name = "networkx-query"
+version = "1.0.1"
+description = "NetworkX Query Tool"
+category = "main"
+optional = false
+python-versions = ">=3.7,<4.0"
+
+[package.dependencies]
+networkx = ">=2.4,<3.0"
+
+[[package]]
 name = "numexpr"
 version = "2.8.3"
 description = "Fast numerical expression evaluator for NumPy"
@@ -713,7 +724,7 @@ setuptools = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "1dd404575dc5267af596192b74229954d1fa2d6cc7d701fc1b6ff32ad87576d7"
+content-hash = "43089c83f9e5f05d4db0fb7e37e07ac5a1fd76317581e61b2820727e79ed2540"
 
 [metadata.files]
 atomicwrites = [
@@ -953,6 +964,10 @@ mypy-extensions = [
 networkx = [
     {file = "networkx-2.8.6-py3-none-any.whl", hash = "sha256:2a30822761f34d56b9a370d96a4bf4827a535f5591a4078a453425caeba0c5bb"},
     {file = "networkx-2.8.6.tar.gz", hash = "sha256:bd2b7730300860cbd2dafe8e5af89ff5c9a65c3975b352799d87a6238b4301a6"},
+]
+networkx-query = [
+    {file = "networkx_query-1.0.1-py3-none-any.whl", hash = "sha256:ea6b744840e152902db5a5b51c0ee9f6d273959fb2c8c4a338fdee42abd54ffe"},
+    {file = "networkx_query-1.0.1.tar.gz", hash = "sha256:e1d0e2adcae393955e779fea6934d89b157a3abb0a529e8c47d8d9741df34fc4"},
 ]
 numexpr = [
     {file = "numexpr-2.8.3-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:a6954d65d7140864d9bb2302b7580c60c88c4d12e00c59a0a53f1660573e922b"},
