@@ -166,7 +166,7 @@ def _df_to_nx_g(  # type: ignore[no-any-unimported]
     )
 
     # Contract nodes based on common text
-    for ntype in [NodeType.author, NodeType.music]:
+    for ntype in [NodeType.author, NodeType.music, NodeType.hashtag]:
         list_set_nid = identify_ntype_node_to_contract_by_text(
             nx_g=nx_g,
             ntype=ntype,
