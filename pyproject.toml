@@ -12,6 +12,7 @@ python-dotenv = "^0.20.0"
 TikTokApi = "^5.2.2"
 pandas = "^1.4.3"
 tables = "^3.7.0"
+networkx = "^2.8.6"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.3.0"
@@ -64,7 +65,8 @@ show_error_codes = true
 [[tool.mypy.overrides]]
 module = [
     'pandas.*',
-    'TikTokApi.*'
+    'TikTokApi.*',
+    'networkx.*',
 ]
 warn_return_any = false
 ignore_missing_imports = true

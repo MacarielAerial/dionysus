@@ -1,6 +1,10 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Tuple
+
+from pandas import Series
 
 #
 # Node Related
@@ -44,7 +48,6 @@ class NodeAttrKey(Enum):
     # Attributes specific to sound
     album: str = "album"
     author_name: str = "author_name"
-
     play_url: str = "play_url"
 
     # Attributes specific to video and author
@@ -52,10 +55,12 @@ class NodeAttrKey(Enum):
 
     # Attributes specific to video and hastag
     creation_time: str = "creation_time"
-    video_count: str = "video_count"
 
     # Attributes specific to video and sound
     duration: str = "duration"
+
+    # Attributes specific to author and hashtag
+    video_count: str = "video_count"
 
 
 @dataclass
@@ -75,12 +80,24 @@ class NodeAttrs:
     list_node_attr: List[NodeAttr]
 
     def to_dict_native(self) -> Dict[str, Any]:
-        dict_native: Dict[str, Any] = {}
+        node_attrs_native: Dict[str, Any] = {}
 
         for node_attr in self.list_node_attr:
-            dict_native.update(node_attr.to_dict_native())
+            node_attrs_native.update(node_attr.to_dict_native())
 
-        return dict_native
+        return node_attrs_native
+
+    def to_multi_index_dict_native(self, ntype: NodeType) -> Dict[Tuple[str, str], Any]:
+        multi_index_dict_native: Dict[Tuple[str, str], Any] = {}
+
+        node_attrs_native = self.to_dict_native()
+
+        for node_attr_key, node_attr_val in node_attrs_native.items():
+            multi_index_dict_native.update(
+                {(ntype.value, node_attr_key): node_attr_val}
+            )
+
+        return multi_index_dict_native
 
 
 @dataclass
@@ -90,6 +107,20 @@ class NodeTuple:
 
     def to_node_tuple_native(self) -> Tuple[int, Dict[str, Any]]:
         return (self.nid, self.node_attrs.to_dict_native())
+
+    @classmethod
+    def from_node_series(  # type: ignore[no-any-unimported]
+        cls, nid: int, node_series: Series
+    ) -> NodeTuple:
+        node_tuple = NodeTuple(nid=nid, node_attrs=NodeAttrs(list_node_attr=[]))
+
+        for node_attr_key, node_attr_val in node_series.iteritems():
+            node_attr = NodeAttr(
+                node_attr_key=NodeAttrKey(node_attr_key), node_attr_val=node_attr_val
+            )
+            node_tuple.node_attrs.list_node_attr.append(node_attr)
+
+        return node_tuple
 
 
 @dataclass
@@ -110,7 +141,7 @@ class NodeTuples:
 class EdgeType(Enum):
     video_to_hashtag: str = "VideoToHashtag"
     author_to_video: str = "AuthorToVideo"
-    sound_to_video: str = "SoundToVideo"
+    music_to_video: str = "MusicToVideo"
 
 
 class EdgeAttrKey(Enum):
@@ -131,15 +162,15 @@ class EdgeAttr:
 
 @dataclass
 class EdgeAttrs:
-    list_edge_attr: List[NodeAttr]
+    list_edge_attr: List[EdgeAttr]
 
     def to_dict_native(self) -> Dict[str, Any]:
-        dict_native: Dict[str, Any] = {}
+        edge_attrs_native: Dict[str, Any] = {}
 
         for edge_attr in self.list_edge_attr:
-            dict_native.update(edge_attr.to_dict_native())
+            edge_attrs_native.update(edge_attr.to_dict_native())
 
-        return dict_native
+        return edge_attrs_native
 
 
 @dataclass

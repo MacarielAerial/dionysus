@@ -1,7 +1,6 @@
 import os
 from datetime import datetime
 from logging import Logger
-from pathlib import Path
 from pprint import pformat
 from typing import Any, Dict
 
@@ -12,19 +11,15 @@ from TikTokApi import TikTokApi
 from ..nodes.utils import return_gen_randint
 
 
-def curr_hashtag_videos_to_df(
-    hashtag: str, n_video: int, path_df: Path, logger: Logger
-) -> None:
+def log_hashtag_videos(hashtag: str, n_video: int, logger: Logger) -> None:
     # Task Processing
-    df = _curr_hashtag_videos_to_df(
-        hashtag=hashtag, n_video=n_video, path_df=path_df, logger=logger
-    )
+    df = _log_hashtag_videos(hashtag=hashtag, n_video=n_video, logger=logger)
 
     logger.info(df)
 
 
-def _curr_hashtag_videos_to_df(  # type: ignore[no-any-unimported]
-    hashtag: str, n_video: int, path_df: Path, logger: Logger
+def _log_hashtag_videos(  # type: ignore[no-any-unimported]
+    hashtag: str, n_video: int, logger: Logger
 ) -> DataFrame:
     # Load environmental variables
     load_dotenv()
@@ -49,7 +44,7 @@ def _curr_hashtag_videos_to_df(  # type: ignore[no-any-unimported]
     ) as api:
         logger.info(f"Querying hashtag '{hashtag}'")
         tag = api.hashtag(name=hashtag)
-        tag_info = tag.info(request_delay=next(randint_gen))
+        tag_info = tag.info(count=n_video, request_delay=next(randint_gen))
         logger.info(
             f"Hastag '{hashtag}' has the following info:\n" f"{pformat(tag_info)}"
         )
@@ -84,7 +79,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         description="Scrap top n TikTok videos under a specified hashtag "
-        "and store responses in a dataframe"
+        "and log responses"
     )
 
     # Disable request library's dependency's logging to reduce verbosity
@@ -104,15 +99,7 @@ if __name__ == "__main__":
         default=100,
         help="The number of videos whose information is to be downloaded",
     )
-    parser.add_argument(
-        "--path_df",
-        type=Path,
-        required=True,
-        help="Path to a pandas dataframe to store hashtag video information",
-    )
 
     args = parser.parse_args()
 
-    curr_hashtag_videos_to_df(
-        hashtag=args.hashtag, n_video=args.n_video, path_df=args.path_df, logger=logger
-    )
+    log_hashtag_videos(hashtag=args.hashtag, n_video=args.n_video, logger=logger)

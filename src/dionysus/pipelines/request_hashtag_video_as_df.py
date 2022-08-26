@@ -11,6 +11,13 @@ from pandas import DataFrame, Series
 from TikTokApi import TikTokApi
 
 from ..datasets.pandas_hdf5_dataset import PandasHDF5DataSet
+from ..nodes.api_response_parsing import (
+    author_info_stats_to_author_node_attrs,
+    hashtag_info_to_hashtag_node_attrs,
+    music_info_to_music_node_attrs,
+    video_info_to_video_node_attrs,
+)
+from ..nodes.nx_g_schema import NodeType
 from ..nodes.utils import return_gen_randint
 
 
@@ -57,74 +64,73 @@ def _request_hashtag_video_as_df(  # type: ignore[no-any-unimported]
             f"Hastag '{hashtag}' has the following info:\n" f"{pformat(hashtag_info)}"
         )
 
-        # Parse hashtag data into a dictionary
-        dict_hashtag_info: Dict[str, Any] = {
-            "hashtag_id": hashtag_info["id"],
-            "hashtag_title": hashtag_info["title"],
-            "hashtag_view_count": hashtag_info["stats"]["viewCount"],
-            "hashtag_video_count": hashtag_info["stats"]["videoCount"],
-        }
+        # Parse hashtag node data into a dictionary
+        hashtag_attrs = hashtag_info_to_hashtag_node_attrs(hashtag_info=hashtag_info)
+        dict_hashtag_info = hashtag_attrs.to_multi_index_dict_native(
+            ntype=NodeType.hashtag
+        )
 
         video_gen = api_hashtag.videos(count=n_video, request_delay=next(randint_gen))
-        n_video = 0
+        n_video_response = 0
         for video in video_gen:
-            logger.info(f"Iterating over {n_video}th video...")
+            logger.info(f"Iterating over {n_video_response}th video...")
 
             video_info: Dict[str, Any] = video.info(request_delay=next(randint_gen))
-            video_stats = video_info["stats"]
             author_info = video_info["author"]
             author_stats = video_info["authorStats"]
             music_info = video_info["music"]
 
-            # Parse video data into a pandas series
-            s = Series(
-                {
-                    "video_id": video_info["id"],
-                    "video_description": video_info["desc"],
-                    "video_create_time": video_info["createTime"],
-                    "video_duration": video_info["video"]["duration"],
-                    "video_width": video_info["video"]["width"],
-                    "video_height": video_info["video"]["height"],
-                    "video_definition": video_info["video"]["definition"],
-                    "video_format": video_info["video"]["format"],
-                    "video_comment_count": video_stats["commentCount"],
-                    "video_play_count": video_stats["playCount"],
-                    "video_share_count": video_stats["shareCount"],
-                    "video_digg_count": video_stats["diggCount"],
-                    "author_id": author_info["id"],
-                    "author_unique_id": author_info["uniqueId"],
-                    "author_nickname": author_info["nickname"],
-                    "author_is_private_account": author_info["privateAccount"],
-                    "author_signature": author_info["signature"],
-                    "author_verified": author_info["verified"],
-                    "author_follower_count": author_stats["followerCount"],
-                    "author_following_count": author_stats["followingCount"],
-                    "author_heart": author_stats["heart"],
-                    "author_digg_count": author_stats["diggCount"],
-                    "author_video_count": author_stats["videoCount"],
-                    "music_id": music_info["id"],
-                    "music_title": music_info["title"],
-                    "music_author_name": music_info["authorName"],
-                    "music_album": music_info["album"],
-                    "music_duration": music_info["duration"],
-                    "music_play_url": music_info["playUrl"],
-                },
-                name=n_video,
+            # Parse video node data into a dictionary
+            video_attrs = video_info_to_video_node_attrs(video_info=video_info)
+            dict_video_info = video_attrs.to_multi_index_dict_native(
+                ntype=NodeType.video
             )
 
-            n_video += 1
+            # Parse author node data into a dictionary
+            author_attrs = author_info_stats_to_author_node_attrs(
+                author_info=author_info, author_stats=author_stats
+            )
+            dict_author_info = author_attrs.to_multi_index_dict_native(
+                ntype=NodeType.author
+            )
+
+            # Parse music node data into a dictionary
+            music_attrs = music_info_to_music_node_attrs(music_info=music_info)
+            dict_music_info = music_attrs.to_multi_index_dict_native(
+                ntype=NodeType.music
+            )
+
+            # Parse data of nodes of all types into a pandas series
+            dict_multi_ntype_info = (
+                dict_video_info | dict_author_info | dict_music_info | dict_hashtag_info
+            )
+            s = Series(
+                dict_multi_ntype_info.values(),
+                index=pd.MultiIndex.from_tuples(
+                    dict_multi_ntype_info.keys(), names=["ntype", "nfeat"]
+                ),
+                name=n_video_response,
+            )
+
+            n_video_response += 1
 
             # Persist parsed series
             list_single_col_df.append(s.to_frame().T)
 
         logger.info(
-            f"Completed parsing API responses into {len(list_single_col_df)} series"
+            f"Completed parsing API responses of {n_video_response} videos "
+            f"into {len(list_single_col_df)} series"
         )
 
     # Compile list of series into a dataframe
     df = pd.concat(list_single_col_df)
-    df.attrs.update(dict_hashtag_info)
     df.attrs.update({"datetime_request": now.isoformat()})
+
+    # Report null distribution
+    logger.info(
+        "Here is a record of numbers of null values per column:\n"
+        f"{df.isnull().sum(axis=0)}"
+    )
 
     logger.info(
         f"Complete parsing TikTok videos of hastag '{api_hashtag}' "

@@ -42,4 +42,18 @@ class PandasHDF5DataSet:
                 f"and its metadata '{df.attrs}'"
             )
 
+            # Change datatype of the multiindex
+            logger.debug(
+                f"DataFrame column data types before mutation:\n{df.columns.dtypes}"
+            )
+
+            for i in range(len(df.columns.levels)):
+                df.columns = df.columns.set_levels(
+                    df.columns.levels[i].astype(pd.CategoricalDtype()), level=i
+                )
+
+            logger.debug(
+                f"DataFrame column data types after mutation:\n{df.columns.dtypes}"
+            )
+
             return df
