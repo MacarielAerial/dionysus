@@ -3,6 +3,12 @@ An experimental project with the goal of collecting and analysing data from TikT
 
 ## Code Example
 
+### Log TikTok hashtag video data
+
+```console
+
+```
+
 ### Request TikTok video data and store output as a dataframe
 
 ```console

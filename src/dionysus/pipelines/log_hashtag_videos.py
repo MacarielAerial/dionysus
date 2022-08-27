@@ -24,8 +24,8 @@ def _log_hashtag_videos(  # type: ignore[no-any-unimported]
     # Load environmental variables
     load_dotenv()
 
-    # Get verify fp value
-    verifyFp = os.environ.get("S_V_WEB_ID")
+    # Load cookie
+    msToken = os.environ.get("msToken")
 
     # Roughly mark the datetime of data collection
     now = datetime.now()
@@ -39,12 +39,10 @@ def _log_hashtag_videos(  # type: ignore[no-any-unimported]
         f"Initiating collection of top {n_video} videos " f"of hashtag '{hashtag}'..."
     )
 
-    with TikTokApi(
-        custom_verify_fp=verifyFp, force_verify_fp_on_cookie_header=True, logger=logger
-    ) as api:
+    with TikTokApi(msToken=msToken, logger=logger) as api:
         logger.info(f"Querying hashtag '{hashtag}'")
         tag = api.hashtag(name=hashtag)
-        tag_info = tag.info(count=n_video, request_delay=next(randint_gen))
+        tag_info = tag.info(request_delay=next(randint_gen))
         logger.info(
             f"Hastag '{hashtag}' has the following info:\n" f"{pformat(tag_info)}"
         )
@@ -61,8 +59,14 @@ def _log_hashtag_videos(  # type: ignore[no-any-unimported]
             logger.debug(f"Time of Creation:\n{video_info['createTime']}")
             logger.debug(f"Video Statistics:\n{pformat(video.stats)}")
             logger.debug(f"Video Author:\n{video.author}")
+            logger.debug(f"Video Author Info:\n{video.author.info()}")
+            logger.debug(
+                "Video Author's Videos:\n"
+                f"{[user_video for user_video in video.author.videos()]}"
+            )
             logger.debug(f"Video Sound Title:\n{video.sound.title}")
             logger.debug(f"Video Sound Author:\n{video.sound.author}")
+            logger.debug(f"Video Sound Info:\n{video.sound.info()}")
             logger.debug(f"Video Hashtags:\n{video.hashtags}")
             logger.debug(f"Video Info:\n{pformat(video_info)}")
 

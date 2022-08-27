@@ -41,8 +41,8 @@ def _request_hashtag_video_as_df(  # type: ignore[no-any-unimported]
     # Load environmental variables
     load_dotenv()
 
-    # Get verify fp value
-    verifyFp = os.environ.get("S_V_WEB_ID")
+    # Load cookie
+    msToken = os.environ.get("msToken")
 
     # Roughly mark the datetime of data collection
     now = datetime.now()
@@ -54,9 +54,7 @@ def _request_hashtag_video_as_df(  # type: ignore[no-any-unimported]
 
     logger.info(f"Querying hashtag '{hashtag}'...")
 
-    with TikTokApi(
-        custom_verify_fp=verifyFp, force_verify_fp_on_cookie_header=True, logger=logger
-    ) as api:
+    with TikTokApi(msToken=msToken, logger=logger) as api:
         api_hashtag = api.hashtag(name=hashtag)
         hashtag_info = api_hashtag.info(request_delay=next(randint_gen))
 

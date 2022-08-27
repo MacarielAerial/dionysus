@@ -146,13 +146,13 @@ def _df_to_nx_g(  # type: ignore[no-any-unimported]
     # Compile all node tuples and edge tuples
     all_node_tuples = NodeTuples(
         list_node_tuple=video_tuples.list_node_tuple
-        #hashtag_tuples.list_node_tuple
+        # hashtag_tuples.list_node_tuple
         + author_tuples.list_node_tuple
         + music_tuples.list_node_tuple
     )
     all_edge_tuples = EdgeTuples(
         list_edge_tuple=author_to_video_tuples.list_edge_tuple
-        #video_to_hashtag_tuples.list_edge_tuple
+        # video_to_hashtag_tuples.list_edge_tuple
         + music_to_video_tuples.list_edge_tuple
     )
 
