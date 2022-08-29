@@ -10,8 +10,12 @@ from .nx_g_schema import NodeType
 from .utils import group_dict_keys_by_value
 
 
-def identify_ntype_node_to_contract_by_text(  # type: ignore[no-any-unimported]
-    nx_g: Graph, ntype: NodeType, nfeat_ntype: str, nfeat_text: str, logger: Logger
+def identify_ntype_node_to_contract_by_nfeat(  # type: ignore[no-any-unimported]
+    nx_g: Graph,
+    ntype: NodeType,
+    nfeat_ntype: str,
+    nfeat_to_contract: str,
+    logger: Logger,
 ) -> List[Set[int]]:
     # Inititate result object
     list_set_nid_to_contract: List[Set[int]] = []
@@ -24,19 +28,19 @@ def identify_ntype_node_to_contract_by_text(  # type: ignore[no-any-unimported]
     logger.debug(f"{len(list_nid_ntype)} {ntype.value} type nodes exist in input graph")
 
     # Construct a mapping from node id to its respective text
-    dict_nid_text: Dict[int, str] = nx.get_node_attributes(
-        G=nx_g.subgraph(nodes=list_nid_ntype), name=nfeat_text
+    dict_nid_nfeat: Dict[int, str] = nx.get_node_attributes(
+        G=nx_g.subgraph(nodes=list_nid_ntype), name=nfeat_to_contract
     )
 
     # Inverse the mapping
-    dict_text_list_nid = group_dict_keys_by_value(d=dict_nid_text)
+    dict_nfeat_list_nid = group_dict_keys_by_value(d=dict_nid_nfeat)
 
     logger.debug(
         "Frequency distribution of node contraction group sizes:\n"
-        f"{Counter([len(list_nid) for list_nid in dict_text_list_nid.values()])}"
+        f"{Counter([len(list_nid) for list_nid in dict_nfeat_list_nid.values()])}"
     )
 
-    for list_nid in dict_text_list_nid.values():
+    for list_nid in dict_nfeat_list_nid.values():
         if len(list_nid) > 1:
             # Never designate a single node to contract with itself
             list_set_nid_to_contract.append(set(list_nid))

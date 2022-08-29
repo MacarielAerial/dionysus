@@ -4,7 +4,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Tuple
 
-from pandas import Series
+import pandas as pd
+from pandas import DataFrame, Series
 
 #
 # Node Related
@@ -87,17 +88,32 @@ class NodeAttrs:
 
         return node_attrs_native
 
-    def to_multi_index_dict_native(self, ntype: NodeType) -> Dict[Tuple[str, str], Any]:
+    def to_multi_index_dict_native(self) -> Dict[Tuple[str, str], Any]:
         multi_index_dict_native: Dict[Tuple[str, str], Any] = {}
 
         node_attrs_native = self.to_dict_native()
 
+        ntype = node_attrs_native.pop(NodeAttrKey.ntype.value)
+
         for node_attr_key, node_attr_val in node_attrs_native.items():
-            multi_index_dict_native.update(
-                {(ntype.value, node_attr_key): node_attr_val}
-            )
+            multi_index_dict_native.update({(ntype, node_attr_key): node_attr_val})
 
         return multi_index_dict_native
+
+    def to_df(self) -> DataFrame:  # type: ignore[no-any-unimported]
+        multi_index_dict_native = self.to_multi_index_dict_native()
+
+        s = Series(
+            multi_index_dict_native.values(),
+            index=pd.MultiIndex.from_tuples(
+                multi_index_dict_native.keys(), names=["ntype", "nfeat"]
+            ),
+            name=0,
+        )
+
+        df = (s.to_frame()).T
+
+        return df
 
 
 @dataclass
@@ -146,6 +162,8 @@ class EdgeType(Enum):
 
 class EdgeAttrKey(Enum):
     etype: str = "etype"
+    src_original_id: str = "src_original_id"
+    dst_original_id: str = "dst_original_id"
 
 
 @dataclass
@@ -172,6 +190,33 @@ class EdgeAttrs:
 
         return edge_attrs_native
 
+    def to_multi_index_dict_native(self) -> Dict[Tuple[str, str], Any]:
+        multi_index_dict_native: Dict[Tuple[str, str], Any] = {}
+
+        edge_attrs_native = self.to_dict_native()
+
+        etype = edge_attrs_native.pop(EdgeAttrKey.etype.value)
+
+        for edge_attr_key, edge_attr_val in edge_attrs_native.items():
+            multi_index_dict_native.update({(etype, edge_attr_key): edge_attr_val})
+
+        return multi_index_dict_native
+
+    def to_df(self) -> DataFrame:  # type: ignore[no-any-unimported]
+        multi_index_dict_native = self.to_multi_index_dict_native()
+
+        s = Series(
+            multi_index_dict_native.values(),
+            index=pd.MultiIndex.from_tuples(
+                multi_index_dict_native.keys(), names=["etype", "efeat"]
+            ),
+            name=0,
+        )
+
+        df = (s.to_frame()).T
+
+        return df
+
 
 @dataclass
 class EdgeTuple:
@@ -181,6 +226,22 @@ class EdgeTuple:
 
     def to_edge_tuple_native(self) -> Tuple[int, int, Dict[str, Any]]:
         return (self.src_nid, self.dst_nid, self.edge_attrs.to_dict_native())
+
+    @classmethod
+    def from_edge_series(  # type: ignore[no-any-unimported]
+        cls, src_nid: int, dst_nid: int, edge_series: Series
+    ) -> EdgeTuple:
+        edge_tuple = EdgeTuple(
+            src_nid=src_nid, dst_nid=dst_nid, edge_attrs=EdgeAttrs(list_edge_attr=[])
+        )
+
+        for edge_attr_key, edge_attr_val in edge_series.iteritems():
+            edge_attr = EdgeAttr(
+                edge_attr_key=EdgeAttrKey(edge_attr_key), edge_attr_val=edge_attr_val
+            )
+            edge_tuple.edge_attrs.list_edge_attr.append(edge_attr)
+
+        return edge_tuple
 
 
 @dataclass

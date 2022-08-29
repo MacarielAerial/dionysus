@@ -33,6 +33,9 @@ class PandasHDF5DataSet:
     ) -> DataFrame:
         with pd.HDFStore(filepath) as hdf5_store:
             df = hdf5_store["df"]
+
+            logger.debug(f"HDF5 store file structure:\n{hdf5_store._handle}")
+
             metadata = hdf5_store.get_storer("df").attrs.metadata
 
             df.attrs = metadata

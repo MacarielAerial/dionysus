@@ -1,9 +1,10 @@
+import itertools
 from random import randint
 from typing import Dict, Iterator, List
 
 
-def return_gen_randint(start: int, end: int, n_iter: int) -> Iterator[int]:
-    for _ in range(n_iter):
+def return_gen_randint(start: int, end: int) -> Iterator[int]:
+    for _ in itertools.count():
         yield randint(start, end)
 
 

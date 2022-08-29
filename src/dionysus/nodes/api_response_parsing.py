@@ -5,7 +5,20 @@ Parse API response from TikTok into graph elements
 
 from typing import Any, Dict
 
-from .nx_g_schema import NodeAttr, NodeAttrKey, NodeAttrs, NodeType
+from .nx_g_schema import (
+    EdgeAttr,
+    EdgeAttrKey,
+    EdgeAttrs,
+    EdgeType,
+    NodeAttr,
+    NodeAttrKey,
+    NodeAttrs,
+    NodeType,
+)
+
+#
+# Node Parsing
+#
 
 
 def video_info_to_video_node_attrs(video_info: Dict[str, Any]) -> NodeAttrs:
@@ -72,28 +85,6 @@ def video_info_to_video_node_attrs(video_info: Dict[str, Any]) -> NodeAttrs:
     )
 
     return video_attrs
-
-
-def hashtag_info_to_hashtag_node_attrs(hashtag_info: Dict[str, Any]) -> NodeAttrs:
-    # Parse each node attribute
-    ntype = NodeAttr(
-        node_attr_key=NodeAttrKey.ntype, node_attr_val=NodeType.hashtag.value
-    )
-    id = NodeAttr(node_attr_key=NodeAttrKey.id, node_attr_val=hashtag_info["id"])
-    text = NodeAttr(node_attr_key=NodeAttrKey.text, node_attr_val=hashtag_info["title"])
-    view_count = NodeAttr(
-        node_attr_key=NodeAttrKey.view_count,
-        node_attr_val=hashtag_info["stats"]["viewCount"],
-    )
-    video_count = NodeAttr(
-        node_attr_key=NodeAttrKey.video_count,
-        node_attr_val=hashtag_info["stats"]["videoCount"],
-    )
-
-    # Collect parsed attributes
-    hashtag_attrs = NodeAttrs(list_node_attr=[ntype, id, text, view_count, video_count])
-
-    return hashtag_attrs
 
 
 def author_info_stats_to_author_node_attrs(
@@ -183,3 +174,90 @@ def music_info_to_music_node_attrs(music_info: Dict[str, Any]) -> NodeAttrs:
     )
 
     return music_node_attrs
+
+
+def hashtag_info_to_hashtag_node_attrs(hashtag_info: Dict[str, Any]) -> NodeAttrs:
+    # Parse each node attribute
+    ntype = NodeAttr(
+        node_attr_key=NodeAttrKey.ntype, node_attr_val=NodeType.hashtag.value
+    )
+    id = NodeAttr(node_attr_key=NodeAttrKey.id, node_attr_val=hashtag_info["id"])
+    text = NodeAttr(node_attr_key=NodeAttrKey.text, node_attr_val=hashtag_info["title"])
+    view_count = NodeAttr(
+        node_attr_key=NodeAttrKey.view_count,
+        node_attr_val=hashtag_info["stats"]["viewCount"],
+    )
+    video_count = NodeAttr(
+        node_attr_key=NodeAttrKey.video_count,
+        node_attr_val=hashtag_info["stats"]["videoCount"],
+    )
+
+    # Collect parsed attributes
+    hashtag_attrs = NodeAttrs(list_node_attr=[ntype, id, text, view_count, video_count])
+
+    return hashtag_attrs
+
+
+#
+# Edge Parsing
+#
+
+
+def id_to_author_to_video_edge_attrs(author_id: str, video_id: str) -> EdgeAttrs:
+    # Parse each edge attribute
+    etype = EdgeAttr(
+        edge_attr_key=EdgeAttrKey.etype, edge_attr_val=EdgeType.author_to_video.value
+    )
+    src_original_id = EdgeAttr(
+        edge_attr_key=EdgeAttrKey.src_original_id, edge_attr_val=author_id
+    )
+    dst_original_id = EdgeAttr(
+        edge_attr_key=EdgeAttrKey.dst_original_id, edge_attr_val=video_id
+    )
+
+    # Collect parsed attributes
+    author_to_video_attrs = EdgeAttrs(
+        list_edge_attr=[etype, src_original_id, dst_original_id]
+    )
+
+    return author_to_video_attrs
+
+
+def id_to_music_to_video_edge_attrs(music_id: str, video_id: str) -> EdgeAttrs:
+    # Parse each edge attribute
+    etype = EdgeAttr(
+        edge_attr_key=EdgeAttrKey.etype, edge_attr_val=EdgeType.music_to_video.value
+    )
+    src_original_id = EdgeAttr(
+        edge_attr_key=EdgeAttrKey.src_original_id, edge_attr_val=music_id
+    )
+    dst_original_id = EdgeAttr(
+        edge_attr_key=EdgeAttrKey.dst_original_id, edge_attr_val=video_id
+    )
+
+    # Collect parsed attributes
+    music_to_video_attrs = EdgeAttrs(
+        list_edge_attr=[etype, src_original_id, dst_original_id]
+    )
+
+    return music_to_video_attrs
+
+
+def id_to_video_to_hashtag_edge_attrs(video_id: str, hashtag_id: str) -> EdgeAttrs:
+    # Parse each edge attribute
+    etype = EdgeAttr(
+        edge_attr_key=EdgeAttrKey.etype, edge_attr_val=EdgeType.video_to_hashtag.value
+    )
+    src_original_id = EdgeAttr(
+        edge_attr_key=EdgeAttrKey.src_original_id, edge_attr_val=video_id
+    )
+    dst_original_id = EdgeAttr(
+        edge_attr_key=EdgeAttrKey.dst_original_id, edge_attr_val=hashtag_id
+    )
+
+    # Collect parsed attributes
+    video_to_hashtag_attrs = EdgeAttrs(
+        list_edge_attr=[etype, src_original_id, dst_original_id]
+    )
+
+    return video_to_hashtag_attrs

@@ -33,7 +33,7 @@ def _log_hashtag_videos(  # type: ignore[no-any-unimported]
     logger.info(f"Datetime of data collection is marked as {now}")
 
     # Initiate a random number generator for request wait time
-    randint_gen = return_gen_randint(start=1, end=10, n_iter=n_video + 30)
+    randint_gen = return_gen_randint(start=1, end=10)
 
     logger.info(
         f"Initiating collection of top {n_video} videos " f"of hashtag '{hashtag}'..."
@@ -42,7 +42,7 @@ def _log_hashtag_videos(  # type: ignore[no-any-unimported]
     with TikTokApi(msToken=msToken, logger=logger) as api:
         logger.info(f"Querying hashtag '{hashtag}'")
         tag = api.hashtag(name=hashtag)
-        tag_info = tag.info(request_delay=next(randint_gen))
+        tag_info = tag.info_full(request_delay=next(randint_gen))
         logger.info(
             f"Hastag '{hashtag}' has the following info:\n" f"{pformat(tag_info)}"
         )
@@ -59,14 +59,16 @@ def _log_hashtag_videos(  # type: ignore[no-any-unimported]
             logger.debug(f"Time of Creation:\n{video_info['createTime']}")
             logger.debug(f"Video Statistics:\n{pformat(video.stats)}")
             logger.debug(f"Video Author:\n{video.author}")
-            logger.debug(f"Video Author Info:\n{video.author.info()}")
+            logger.debug(
+                f"Video Author Full Info:\n{pformat(video.author.info_full())}"
+            )
             logger.debug(
                 "Video Author's Videos:\n"
-                f"{[user_video for user_video in video.author.videos()]}"
+                f"{[user_video.id for user_video in video.author.videos()]}"
             )
             logger.debug(f"Video Sound Title:\n{video.sound.title}")
             logger.debug(f"Video Sound Author:\n{video.sound.author}")
-            logger.debug(f"Video Sound Info:\n{video.sound.info()}")
+            logger.debug(f"Video Sound Full Info:\n{pformat(video.sound.info())}")
             logger.debug(f"Video Hashtags:\n{video.hashtags}")
             logger.debug(f"Video Info:\n{pformat(video_info)}")
 
