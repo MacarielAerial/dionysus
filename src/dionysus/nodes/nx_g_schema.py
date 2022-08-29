@@ -93,7 +93,7 @@ class NodeAttrs:
 
         node_attrs_native = self.to_dict_native()
 
-        ntype = node_attrs_native.pop(NodeAttrKey.ntype.value)
+        ntype = node_attrs_native[NodeAttrKey.ntype.value]
 
         for node_attr_key, node_attr_val in node_attrs_native.items():
             multi_index_dict_native.update({(ntype, node_attr_key): node_attr_val})
@@ -106,7 +106,7 @@ class NodeAttrs:
         s = Series(
             multi_index_dict_native.values(),
             index=pd.MultiIndex.from_tuples(
-                multi_index_dict_native.keys(), names=["ntype", "nfeat"]
+                multi_index_dict_native.keys(), names=["NTYPE", "NFEAT"]
             ),
             name=0,
         )
@@ -195,7 +195,7 @@ class EdgeAttrs:
 
         edge_attrs_native = self.to_dict_native()
 
-        etype = edge_attrs_native.pop(EdgeAttrKey.etype.value)
+        etype = edge_attrs_native[EdgeAttrKey.etype.value]
 
         for edge_attr_key, edge_attr_val in edge_attrs_native.items():
             multi_index_dict_native.update({(etype, edge_attr_key): edge_attr_val})
@@ -208,7 +208,7 @@ class EdgeAttrs:
         s = Series(
             multi_index_dict_native.values(),
             index=pd.MultiIndex.from_tuples(
-                multi_index_dict_native.keys(), names=["etype", "efeat"]
+                multi_index_dict_native.keys(), names=["ETYPE", "EFEAT"]
             ),
             name=0,
         )

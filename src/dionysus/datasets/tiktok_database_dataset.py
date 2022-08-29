@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, fields, replace
 from logging import Logger
 from pathlib import Path
+from typing import Dict
 
 import pandas as pd
 from pandas import DataFrame
@@ -21,15 +24,20 @@ class TikTokDataBase:  # type: ignore[no-any-unimported]
     music_to_video_df: DataFrame  # type: ignore[no-any-unimported]
     video_to_hashtag_df: DataFrame  # type: ignore[no-any-unimported]
 
-    def all_df_column_indices_to_categorical(self, logger: Logger) -> None:
-        for field in fields(self):
-            field_name = field.name
-            df = getattr(self, field_name)
+    @staticmethod
+    def all_df_column_indices_to_categorical(
+        tiktok_database: TikTokDataBase, logger: Logger
+    ) -> None:
+        for field in fields(tiktok_database):
+            df = getattr(tiktok_database, field.name)
             df = all_column_indices_to_categorical(df=df, logger=logger)
-            self = replace(self, field_name=df)
+            dict_replace: Dict[str, DataFrame] = {  # type: ignore[no-any-unimported]
+                field.name: df
+            }
+            tiktok_database = replace(tiktok_database, **dict_replace)
 
             logger.debug(
-                f"Converted column indces of {field_name} field to categorical"
+                f"Converted column indces of {field.name} field to categorical"
             )
 
 
@@ -46,19 +54,25 @@ class TikTokDataBaseDataSet:
     @staticmethod
     def _save(filepath: Path, tiktok_database: TikTokDataBase, logger: Logger) -> None:
         with pd.HDFStore(filepath) as hdf5_store:
-            hdf5_store.put("/nodes/video_df", tiktok_database.video_df)
-            hdf5_store.put("/nodes/author_df", tiktok_database.author_df)
-            hdf5_store.put("/nodes/music_df", tiktok_database.music_df)
-            hdf5_store.put("/nodes/hashtag_df", tiktok_database.hashtag_df)
+            hdf5_store.put("/nodes/video_df", tiktok_database.video_df, format="t")
+            hdf5_store.put("/nodes/author_df", tiktok_database.author_df, format="t")
+            hdf5_store.put("/nodes/music_df", tiktok_database.music_df, format="t")
+            hdf5_store.put("/nodes/hashtag_df", tiktok_database.hashtag_df, format="t")
 
             hdf5_store.put(
-                "/edges/author_to_video_df", tiktok_database.author_to_video_df
+                "/edges/author_to_video_df",
+                tiktok_database.author_to_video_df,
+                format="t",
             )
             hdf5_store.put(
-                "/edges/music_to_video_df", tiktok_database.music_to_video_df
+                "/edges/music_to_video_df",
+                tiktok_database.music_to_video_df,
+                format="t",
             )
             hdf5_store.put(
-                "/edges/video_to_hashtag_df", tiktok_database.video_to_hashtag_df
+                "/edges/video_to_hashtag_df",
+                tiktok_database.video_to_hashtag_df,
+                format="t",
             )
 
             hdf5_store.close()
@@ -92,7 +106,9 @@ class TikTokDataBaseDataSet:
                 video_to_hashtag_df=video_to_hashtag_df,
             )
 
-            tiktok_database.all_df_column_indices_to_categorical(logger=logger)
+            TikTokDataBase.all_df_column_indices_to_categorical(
+                tiktok_database=tiktok_database, logger=logger
+            )
 
             logger.info(
                 f"Loaded a {type(tiktok_database)} type object from {filepath} "

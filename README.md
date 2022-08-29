@@ -9,14 +9,14 @@ An experimental project with the goal of collecting and analysing data from TikT
 
 ```
 
-### Request TikTok video data and store output as a dataframe
+### Request TikTok video data and store output dataframes as a HDF5 object
 
 ```console
-poetry run python -m src.dionysus.pipelines.request_hashtag_video_as_df --hashtag zoukbrasileiro --n_video 10  --path_df data/01_raw/df_hashtag_videos.h5
+poetry run python -m src.dionysus.pipelines.request_hashtag_videos_as_list_df --hashtag zoukbrasileiro --n_video 10  --path_df data/01_raw/tiktok_database.h5
 ```
 
-### Parse the typed dataframe into a networkx graph
+### Parse the typed dataframes into a networkx graph
 
 ```console
-poetry run python -m src.dionysus.pipelines.df_to_nx_g -pd data/01_raw/df_hashtag_videos.h5 -png data/02_intermediate/hashtag_video_networkx_graph.json
+poetry run python -m src.dionysus.pipelines.tiktok_database_to_nx_g -pd data/01_raw/tiktok_database.h5 -png data/02_intermediate/hashtag_video_networkx_graph.json
 ```

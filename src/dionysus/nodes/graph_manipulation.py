@@ -19,7 +19,6 @@ def identify_ntype_node_to_contract_by_nfeat(  # type: ignore[no-any-unimported]
 ) -> List[Set[int]]:
     # Inititate result object
     list_set_nid_to_contract: List[Set[int]] = []
-
     # Identify candidate nodes
     list_nid_ntype: List[int] = list(
         search_nodes(graph=nx_g, query={"==": [(nfeat_ntype,), ntype.value]})
