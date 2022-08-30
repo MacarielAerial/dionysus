@@ -54,25 +54,19 @@ class TikTokDataBaseDataSet:
     @staticmethod
     def _save(filepath: Path, tiktok_database: TikTokDataBase, logger: Logger) -> None:
         with pd.HDFStore(filepath) as hdf5_store:
-            hdf5_store.put("/nodes/video_df", tiktok_database.video_df, format="t")
-            hdf5_store.put("/nodes/author_df", tiktok_database.author_df, format="t")
-            hdf5_store.put("/nodes/music_df", tiktok_database.music_df, format="t")
-            hdf5_store.put("/nodes/hashtag_df", tiktok_database.hashtag_df, format="t")
+            hdf5_store.put("/nodes/video_df", tiktok_database.video_df)
+            hdf5_store.put("/nodes/author_df", tiktok_database.author_df)
+            hdf5_store.put("/nodes/music_df", tiktok_database.music_df)
+            hdf5_store.put("/nodes/hashtag_df", tiktok_database.hashtag_df)
 
             hdf5_store.put(
-                "/edges/author_to_video_df",
-                tiktok_database.author_to_video_df,
-                format="t",
+                "/edges/author_to_video_df", tiktok_database.author_to_video_df
             )
             hdf5_store.put(
-                "/edges/music_to_video_df",
-                tiktok_database.music_to_video_df,
-                format="t",
+                "/edges/music_to_video_df", tiktok_database.music_to_video_df
             )
             hdf5_store.put(
-                "/edges/video_to_hashtag_df",
-                tiktok_database.video_to_hashtag_df,
-                format="t",
+                "/edges/video_to_hashtag_df", tiktok_database.video_to_hashtag_df
             )
 
             hdf5_store.close()

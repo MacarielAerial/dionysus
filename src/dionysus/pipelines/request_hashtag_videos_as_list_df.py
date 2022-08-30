@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 from logging import Logger
 from pathlib import Path
-from typing import List
+from typing import Any, Dict, List
 
 import pandas as pd
 from dotenv import load_dotenv
@@ -61,7 +61,7 @@ def _request_hashtag_video_as_df(
     logger.info(f"Datetime of request is marked as {now}")
 
     # Initiate a random number generator for request wait time
-    randint_gen = return_gen_randint(start=1, end=5)
+    randint_gen = return_gen_randint(start=10, end=20)
 
     logger.info(f"Querying hashtag '{hashtag}'...")
 
@@ -80,6 +80,7 @@ def _request_hashtag_video_as_df(
             author_info = video_info["author"]
             author_stats = video_info["authorStats"]
             music_info = video_info["music"]
+            list_hashtag_info: List[Dict[str, Any]] = video_info["challenges"]
 
             #
             # Node Parsing
@@ -105,9 +106,7 @@ def _request_hashtag_video_as_df(
             list_video_hashtag_df: List[  # type: ignore[no-any-unimported]
                 DataFrame
             ] = []
-            for video_hashtag in video.hashtags:
-                hashtag_info = video_hashtag.info(request_delay=next(randint_gen))
-
+            for hashtag_info in list_hashtag_info:
                 # Parse hashtag node data into a dictionary
                 hashtag_attrs = hashtag_info_to_hashtag_node_attrs(
                     hashtag_info=hashtag_info
