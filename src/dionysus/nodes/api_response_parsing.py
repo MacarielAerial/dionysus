@@ -49,7 +49,7 @@ def video_info_to_video_node_attrs(video_info: Dict[str, Any]) -> NodeAttrs:
         node_attr_val=video_info["video"].get("definition", None),
     )
     format = NodeAttr(
-        node_attr_key=NodeAttrKey.format, node_attr_val=video_info["video"]["format"]
+        node_attr_key=NodeAttrKey.format, node_attr_val=video_info["video"].get("format", None)
     )
     comment_count = NodeAttr(
         node_attr_key=NodeAttrKey.comment_count,

@@ -9,6 +9,12 @@ An experimental project with the goal of collecting and analysing data from TikT
 
 ```
 
+### Request TikTok video data but log everything instead of persisting in disk
+
+```console
+poetry run python -m src.dionysus.pipelines.log_hashtag_videos --hashtag zoukbrasileiro --n_video 10
+```
+
 ### Request TikTok video data and store output dataframes as a HDF5 object
 
 ```console

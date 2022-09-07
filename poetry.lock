@@ -792,7 +792,7 @@ selenium-stealth = "^1.0.6"
 type = "git"
 url = "git@github.com:MacarielAerial/TikTok-Api.git"
 reference = "cookie_in_request"
-resolved_reference = "e06f1a3d917d75b8cef7c9a8395de727392e91ce"
+resolved_reference = "8e0510f777b12fe834fe41d62625e00e993ce9ab"
 
 [[package]]
 name = "tomli"

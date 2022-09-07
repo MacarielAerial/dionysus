@@ -61,7 +61,7 @@ def _request_hashtag_video_as_df(
     logger.info(f"Datetime of request is marked as {now}")
 
     # Initiate a random number generator for request wait time
-    randint_gen = return_gen_randint(start=10, end=20)
+    randint_gen = return_gen_randint(start=15, end=30)
 
     logger.info(f"Querying hashtag '{hashtag}'...")
 
@@ -215,6 +215,7 @@ if __name__ == "__main__":
     # Disable request library's dependency's logging to reduce verbosity
     logging.getLogger("urllib3").setLevel(logging.WARNING)
     logger = get_base_logger()
+    logger.setLevel(logging.INFO)
 
     parser.add_argument(
         "--hashtag",
