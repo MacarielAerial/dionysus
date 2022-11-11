@@ -6,7 +6,7 @@ from pathlib import Path
 
 from pytest import fixture
 
-from gaia.nodes.project_logging import default_logging
+from dionysus.nodes.project_logging import default_logging
 
 
 @fixture

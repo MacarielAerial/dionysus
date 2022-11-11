@@ -17,21 +17,22 @@ python = "^3.9"
 python-dotenv = "^0.21.0"
 orjson = "^3.8.1"
 dacite = "^1.6.0"
-networkx = "^2.8.7"
+networkx = "^2.8.8"
 numpy = "^1.23.4"
-ipykernel = "^6.17.0"
+ipykernel = "^6.17.1"
 playwright = "^1.27.1"
 
 [tool.poetry.group.dev.dependencies]
 isort = "^5.10.1"
 pytest = "^7.2.0"
-mypy = "^0.982"
+mypy = "^0.990"
 flake8 = "^5.0.4"
 coverage = {extras = ["toml"], version = "^6.5.0"}
-black = "^22.10.0"
+black = {extras = ["jupyter"], version = "^22.10.0"}
 yamllint = "^1.28.0"
-semgrep = "^0.118.0"
+semgrep = "^0.121.2"
 poetryup = "^0.12.3"
+types-requests = "^2.28.11.4"
 
 [build-system]
 requires = ["poetry-core"]
@@ -78,6 +79,13 @@ check_untyped_defs = true
 warn_return_any = true
 warn_unused_ignores = true
 show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = [
+    "networkx.*"
+]
+ignore_missing_imports = true
+warn_return_any = false
 
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]
